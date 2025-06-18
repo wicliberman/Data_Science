@@ -1,0 +1,1 @@
+Objetivo: Comprender el flujo de trabajo necesario para implementar un modelo predictivo en el ámbito del Machine Learning (ML), utilizando el lenguaje de programación Python y la plataforma Google Colab Research (versión en la nube de Jupyter Notebook). (Data wrangling, procesamiento y preparación de los datos, construcción y evaluación del modelo predictivo, etc.)
