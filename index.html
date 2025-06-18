@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarea: Predicción de Conversión de Leads - Data Science para Empresas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #ffffff;
+            font-size: 16px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px 30px;
+            border-bottom: 1px solid #e5e5e5;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .header h1 {
+            color: #1a1a1a;
+            font-size: 2.2em;
+            font-weight: 400;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+        
+        .header .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            font-weight: 300;
+        }
+        
+        .section {
+            margin-bottom: 50px;
+        }
+        
+        .section-title {
+            color: #1a1a1a;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 25px;
+            padding: 15px 0;
+            border-bottom: 2px solid #007bff;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: #28a745;
+        }
+        
+        .content-block {
+            background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #333;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .content-block h3 {
+            color: #1a1a1a;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .variables-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .variable-item {
+            background: linear-gradient(135deg, #ffffff 0%, #f9f9f9 100%);
+            padding: 16px 20px;
+            border-radius: 8px;
+            border-left: 3px solid #666;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .variable-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .variable-name {
+            font-weight: 500;
+            color: #1a1a1a;
+            margin-bottom: 4px;
+            font-size: 0.95em;
+        }
+        
+        .variable-desc {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .lead-data {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #ecf0f1;
+            padding: 25px;
+            border-radius: 8px;
+            font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            white-space: pre-line;
+            border: 1px solid #34495e;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .questions-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 35px;
+            border-radius: 12px;
+            margin: 40px 0;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+        
+        .question-group {
+            background: rgba(255, 255, 255, 0.7);
+            margin-bottom: 25px;
+            padding: 25px;
+            border-bottom: none;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+        }
+        
+        .question-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .question-title {
+            font-size: 1.1em;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: #1a1a1a;
+        }
+        
+        .question-item {
+            margin: 8px 0;
+            padding-left: 15px;
+            color: #444;
+        }
+        
+        .instructions-list {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 30px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            box-shadow: 0 3px 10px rgba(40, 167, 69, 0.1);
+        }
+        
+        .step-item {
+            margin: 15px 0;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .step-item:last-child {
+            border-bottom: none;
+        }
+        
+        .step-item strong {
+            color: #1a1a1a;
+        }
+        
+        .highlight {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 3px;
+            margin: 20px 0;
+        }
+        
+        .delivery-info {
+            background: #e8f4fd;
+            border: 1px solid #bee5eb;
+            padding: 20px;
+            border-radius: 3px;
+            margin: 30px 0;
+        }
+        
+        .footer {
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid #e5e5e5;
+        }
+        
+        .stats {
+            display: inline-block;
+            background: #333;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 0.85em;
+            font-weight: 500;
+            margin: 0 3px;
+        }
+        
+        ul, ol {
+            margin-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 6px;
+        }
+        
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .download-link {
+            display: inline-block;
+            background: #333;
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            margin: 10px 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .download-link:hover {
+            background: #555;
+            text-decoration: none;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .download-section {
+            text-align: center;
+            margin: 40px 0;
+            padding: 35px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+        }
+        
+        .download-section h2 {
+            color: #1a1a1a;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #007bff;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .download-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 60px;
+            height: 2px;
+            background: #28a745;
+        }
+        
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .download-item {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+            transition: transform 0.2s ease;
+        }
+        
+        .download-item:hover {
+            transform: translateY(-2px);
+        }
+        
+        .download-item h3 {
+            color: #1a1a1a;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .file-info {
+            font-size: 0.9em;
+            color: #666;
+            margin: 10px 0;
+            line-height: 1.4;
+        }
+        
+        .file-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        
+        .excel-icon {
+            color: #1d6f42;
+        }
+        
+        .python-icon {
+            color: #3776ab;
+        }
+        
+        p {
+            margin-bottom: 12px;
+        }
+        
+        strong {
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Tarea: Predicción de Conversión de Leads</h1>
+            <p class="subtitle">Machine Learning con Python en Google Colab Research</p>
+            <p class="subtitle">Curso: Data Science para Empresas</p>
+            <p class="subtitle">Elaborado por Sammy Liberman</p>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Objetivo</h2>
+            <div class="content-block">
+                <p>Comprender el flujo de trabajo necesario para implementar un modelo predictivo en el ámbito del Machine Learning (ML), utilizando el lenguaje de programación Python y la plataforma Google Colab Research (versión en la nube de Jupyter Notebook). (Data wrangling, procesamiento y preparación de los datos, construcción y evaluación del modelo predictivo, etc.)</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Caso de Negocio</h2>
+            <div class="content-block">
+                <p>El ejercicio aborda un problema crítico en el marketing digital de una empresa de educación tecnológica (edtech):</p>
+                
+                <h3>Contexto</h3>
+                <p>Una empresa edtech de la ciudad de Mumbai (India) recibe miles de formularios de contacto (leads) semanalmente. El equipo comercial está sobrepasado y no puede contactar a todos los leads a tiempo, resultando en oportunidades perdidas.</p>
+                
+                <h3>Problema</h3>
+                <p>No todos los leads tienen la misma probabilidad de convertirse en clientes, y el equipo comercial no puede identificar fácilmente cuáles priorizar.</p>
+                
+                <h3>Objetivo</h3>
+                <p>Desarrollar un modelo de Machine Learning que prediga qué leads tienen mayor probabilidad de convertirse en clientes, permitiendo al equipo comercial enfocar sus esfuerzos en los prospectos más prometedores.</p>
+                
+                <h3>Beneficios esperados</h3>
+                <ul>
+                    <li>Optimización de recursos del equipo comercial</li>
+                    <li>Aumento en la tasa de conversión</li>
+                    <li>Mejora de la experiencia del cliente al contactar primero a los más interesados</li>
+                    <li>Incremento de ingresos al capturar oportunidades de alta probabilidad que de otro modo podrían perderse</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Descripción de las Variables (Features)</h2>
+            <p>El dataset denominado <strong>"Lead_Conversion.csv"</strong> tiene <span class="stats">9,240 registros</span> (filas), contiene <span class="stats">17 variables</span> (columnas) que caracterizan a cada lead y su comportamiento:</p>
+            
+            <div class="variables-list">
+                <div class="variable-item">
+                    <div class="variable-name">1. Prospect_ID</div>
+                    <div class="variable-desc">Identificador único para cada prospecto (lead). No tiene valor predictivo, pero sirve como referencia.</div>
+                </div>
+                <div class="variable-item">
+                    <div class="variable-name">2. Lead_Origin</div>
+                    <div class="variable-desc">Canal de origen del lead. Indica cómo llegó el prospecto al sistema (API, Landing Page Submission, etc.). Esta variable puede revelar qué canales atraen leads de mayor calidad.</div>
+                </div>
+                <div class="variable-item">
+                    <div class="variable-name">3. Lead_Source</div>
+                    <div class="variable-desc">Fuente específica del lead (Google, Olark Chat, Organic Search, etc.). Similar a Lead_Origin pero más específica, puede indicar qué campañas o plataformas específicas generan mejores leads.</div>
+                </div>
+                <div class="variable-item">
+                    <div class="variable-name">4. Do_Not_Email</div>
+                    <div class="variable-desc">Indica si el lead ha solicitado no recibir comunicaciones por email ("Yes" o "No"). Puede reflejar el nivel de interés o privacidad del lead.</div>
+                </div>
+                <div class="variable-item">
+                    <div class="variable-name">5. TotalVisits</div>
+                    <div class="variable-desc">Número total de visitas que el lead ha realizado al sitio web. Un mayor número de visitas puede indicar mayor interés y posible intención de compra.</div>
+                </div>
+                <div class="variable-item">
+                    <div class="variable-name">6. Total_Time_Spent_on_Website</div>
+                    <div class="variable-desc">Tiempo total (en segundos) que el lead ha pasado navegando en el sitio web. Mayor tiempo de navegación suele correlacionar con mayor interés en los servicios.</div>
+                </div>
+                <div class="variable-item">
+                    <div class="variable-name">7. Page_Views_Per_Visit</div>
+                    <div class="variable-desc">Promedio de páginas vistas por cada visita al sitio. Indica el nivel de exploración e interés en diferentes aspectos del servicio.</div>
+                </div>
+                <div class="variable-item">
+                    <div class="variable-name">8. Last_Activity</div>
+                    <div class="variable-desc">Última acción realizada por el lead (Email Opened, Converted to Lead, Page Visited, etc.). Puede ser un indicador importante del estado actual de interés del lead.</div>
+                </div>
+                <div class="variable-item">
+                    <div class="variable-name">9. Specialization</div>
+                    <div class="variable-desc">Especialización o área de interés seleccionada por el lead (Business Administration, Media and Advertising, etc.). Revela el interés específico del prospecto en la oferta educativa.</div>
+                </div>
+                <div class="variable-item">
+                    <div class="variable-name">10. How_did_you_hear_about_us</div>
+                    <div class="variable-desc">Canal por el cual el lead conoció a la empresa (Word of Mouth, Select, Other, etc.). Puede indicar la influencia de recomendaciones o marketing.</div>
+                </div>
+                <div class="variable-item">
+                    <div class="variable-name">11. Occupation</div>
+                    <div class="variable-desc">Ocupación actual del lead (Student, Unemployed, Working Professional, etc.). Puede influir en su capacidad de compra o necesidades específicas.</div>
+                </div>
+                <div class="variable-item">
+                    <div class="variable-name">12. Newspaper</div>
+                    <div class="variable-desc">Si el lead conoció a la empresa a través de periódicos ("Yes" o "No"). Variable relacionada con medios de marketing tradicionales.</div>
+                </div>
+                <div class="variable-item">
+                    <div class="variable-name">13. City</div>
+                    <div class="variable-desc">Ciudad donde reside el lead. Puede relacionarse con el poder adquisitivo o acceso a servicios educativos.</div>
+                </div>
+                <div class="variable-item">
+                    <div class="variable-name">14. Activity_Score</div>
+                    <div class="variable-desc">Puntuación numérica basada en la actividad del lead en el sitio. Mayor puntuación suele indicar mayor engagement.</div>
+                </div>
+                <div class="variable-item">
+                    <div class="variable-name">15. Profile_Score</div>
+                    <div class="variable-desc">Puntuación basada en la completitud e información del perfil del lead. Perfiles más completos pueden sugerir mayor seriedad de intención.</div>
+                </div>
+                <div class="variable-item">
+                    <div class="variable-name">16. Downloaded_Brochure</div>
+                    <div class="variable-desc">Indica si el lead ha descargado algún folleto informativo ("Yes" o "No"). Acción que suele demostrar interés concreto en la oferta.</div>
+                </div>
+                <div class="variable-item">
+                    <div class="variable-name">17. Converted</div>
+                    <div class="variable-desc"><strong>Variable objetivo</strong> que indica si el lead se convirtió finalmente en cliente ("Yes" o "No"). Esta es la variable que buscamos predecir.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Modelo de Machine Learning y Algoritmo</h2>
+            <div class="content-block">
+                <h3><strong>Tipo de Problema</strong></h3>
+                <p>Este ejercicio representa un problema de clasificación binaria, donde buscamos predecir si un lead se convertirá (1) o no (0) en cliente.</p>
+                
+                <h3><strong>Algoritmo Seleccionado: Random Forest Classifier</strong></h3>
+                <p>Se eligió Random Forest como algoritmo principal por varias razones:</p>
+                <ol>
+                    <li><strong>Robustez frente a outliers y valores extremos:</strong> Las métricas de actividad web como visitas o tiempo pueden tener distribuciones sesgadas.</li>
+                    <li><strong>Manejo eficiente de características categóricas y numéricas:</strong> El dataset contiene ambos tipos de variables.</li>
+                    <li><strong>Capacidad para capturar relaciones no lineales:</strong> Las interacciones entre comportamiento web, demografía y conversión suelen ser complejas y no lineales.</li>
+                    <li><strong>Proporciona importancia de características:</strong> Crucial para entender qué factores son más relevantes en la conversión de leads.</li>
+                    <li><strong>Buen rendimiento sin excesiva afinación:</strong> Ofrece resultados competitivos incluso con configuraciones básicas.</li>
+                    <li><strong>Bajo riesgo de sobreajuste:</strong> Especialmente importante cuando se trabaja con múltiples variables y datos potencialmente ruidosos.</li>
+                </ol>
+                
+                
+                <h3><strong>Preprocesamiento de Datos</strong></h3>
+                <p>El pipeline implementa varias técnicas de preprocesamiento:</p>
+                <ol>
+                    <li><strong>Manejo de valores nulos:</strong>
+                        <ul>
+                            <li>Variables numéricas: Imputación con la mediana</li>
+                            <li>Variables categóricas: Imputación con la moda (valor más frecuente)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Transformación de variables:</strong>
+                        <ul>
+                            <li>Numéricas: Estandarización (media=0, desviación=1) para equilibrar la influencia de variables con diferentes escalas</li>
+                            <li>Categóricas: Codificación One-Hot para convertir categorías en variables binarias procesables por el algoritmo</li>
+                        </ul>
+                    </li>
+                    <li><strong>División del dataset:</strong>
+                        <ul>
+                            <li>80% para entrenamiento</li>
+                            <li>20% para pruebas</li>
+                            <li>Estratificada por la variable objetivo para mantener la misma proporción de conversiones</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h3><strong>Métricas de Evaluación</strong></h3>
+                <p>El modelo se evalúa mediante múltiples métricas para entender diferentes aspectos de su rendimiento:</p>
+                <ol>
+                    <li><strong>Accuracy:</strong> Porcentaje general de predicciones correctas.</li>
+                    <li><strong>Precision:</strong> De todos los leads que predijimos que convertirían, ¿qué porcentaje realmente convirtió? Crucial para no desperdiciar recursos contactando leads con baja probabilidad.</li>
+                    <li><strong>Recall:</strong> De todos los leads que realmente convirtieron, ¿qué porcentaje logramos identificar? Importante para no perder oportunidades valiosas.</li>
+                    <li><strong>F1-score:</strong> Media armónica de precision y recall, proporcionando una métrica balanceada.</li>
+                    <li><strong>Matriz de confusión:</strong> Visualización de verdaderos/falsos positivos y negativos para entender los errores específicos.</li>
+                    <li><strong>Curva ROC y AUC:</strong> Evaluación del rendimiento del modelo a diferentes umbrales de clasificación, proporcionando una visión más completa que una única métrica.</li>
+                </ol>
+                
+                <h3><strong>Aplicación Práctica del Modelo</strong></h3>
+                <p>El ejercicio culmina con implementaciones prácticas:</p>
+                <p><strong>Interfaz interactiva:</strong> Formulario que permite ingresar características de un lead en tiempo real y ver la predicción de conversión, calculando también un nivel de prioridad de contacto basado en la probabilidad.</p>
+                <p>Estas implementaciones ilustran cómo el modelo puede pasar de ser un ejercicio académico a una herramienta operacional que aporta valor concreto al negocio, permitiendo una priorización eficiente de leads y optimizando los recursos del equipo comercial.</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Análisis del Lead NN</h2>
+            <p>Analice el siguiente caso de un "Lead NN" que ha llegado al sitio web de la empresa edtech:</p>
+            <p><strong>Los datos del lead son:</strong></p>
+            <div class="lead-data">• TotalVisits: 200
+• Total_Time_Spent_on_Website: 360
+• Page_Views_Per_Visit: 33.0
+• Activity_Score: 13.0
+• Profile_Score: 14.0
+• Lead_Origin: Landing Page Submission
+• Lead_Source: Olark Chat
+• Do_Not_Email: No
+• Last_Activity: Page Visited on Website
+• Specialization: Business Administration
+• How_did_you_hear_about_us: Word of Mouth
+• Occupation: Working Professional
+• Newspaper: Yes
+• City: Other Cities of Maharashtra
+• Downloaded_Brochure: Yes</div>
+        </div>
+
+        <div class="questions-section">
+            <h2 class="section-title">Preguntas de Evaluación</h2>
+            <p>Responda las 5 preguntas siguientes:</p>
+            
+            <div class="question-group">
+                <div class="question-title">1. Predicción y variables influyentes:</div>
+                <p>Con base en los datos presentados:</p>
+                <div class="question-item">a. ¿considera usted que Lead NN se convertirá? Fundamente.</div>
+                <div class="question-item">b. ¿Cuál es la probabilidad de conversión del Lead NN?</div>
+                <div class="question-item">c. Identifique cuál es la variable numérica con mayor capacidad explicativa de acuerdo al modelo utilizado.</div>
+            </div>
+
+            <div class="question-group">
+                <div class="question-title">2. Análisis de la matriz de confusión:</div>
+                <div class="question-item">a. Si cada lead convertido genera, en promedio, $1,000 en ingresos, y contactar a cada lead tiene un costo de $50 en tiempo del personal, interprete qué implicaciones tendría para el negocio (en el contexto de esta empresa edtech) que el Lead NN fuera un falso positivo en comparación con un falso negativo.</div>
+                <div class="question-item">b. ¿Cuál de estos errores tendría un mayor impacto económico y por qué?</div>
+            </div>
+
+            <div class="question-group">
+                <div class="question-title">3. Métricas de desempeño:</div>
+                <div class="question-item">a. Presente los valores obtenidos para las métricas de accuracy, precision, recall y F1-score.</div>
+                <div class="question-item">b. Con base en estos resultados, analice cuán adecuado es el modelo predictivo para ser implementado en el contexto del caso presentado. Justifique su respuesta, considerando las implicaciones prácticas para el negocio.</div>
+            </div>
+
+            <div class="question-group">
+                <div class="question-title">4. Optimización del modelo:</div>
+                <div class="question-item">a. Si tuviera que reducir el modelo a únicamente cinco variables para mejorar su eficiencia sin comprometer significativamente el rendimiento, ¿cuáles seleccionaría y por qué?</div>
+            </div>
+
+            <div class="question-group">
+                <div class="question-title">5. Recomendaciones de acción:</div>
+                <div class="question-item">a. Basándose en los datos del lead analizado (Lead NN) y asumiendo que existe una alta probabilidad de conversión, proponga tres acciones concretas y priorizadas que el equipo comercial debería implementar.</div>
+                <div class="question-item">b. Además, indique una acción específica que podría recomendar para mitigar el riesgo de que el Lead NN no se convierta.</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">Instrucciones</h2>
+            <div class="content-block">
+                <h3><strong>Preparación inicial</strong></h3>
+                <div class="instructions-list">
+                    <div class="step-item">
+                        <strong>➤ Paso 1:</strong> Abra su navegador web y vaya a <a href="https://colab.research.google.com" target="_blank">https://colab.research.google.com</a>
+                    </div>
+                    
+                    <div class="step-item">
+                        <strong>➤ Paso 2:</strong> Inicie sesión con su cuenta de Google
+                    </div>
+                    
+                    <div class="step-item">
+                        <strong>➤ Paso 3:</strong> Una vez en Google Colab, haga clic en "Archivo" → "Subir notebook"
+                    </div>
+                    
+                    <div class="step-item">
+                        <strong>➤ Paso 4:</strong> Seleccione y suba el archivo <strong>"Caso_Lead_Conversion.IPYNB"</strong>
+                    </div>
+                    
+                    <div class="step-item">
+                        <strong>➤ Paso 5:</strong> Verifique que el notebook se haya cargado correctamente en Colab - debe ver las secciones numeradas del 1 al 12
+                    </div>
+                </div>
+                
+                <h3><strong>Nota:</strong></h3>
+                <ul>
+                    <li>Cuando llegue a la Sección 2 (carga de datos), aparecerá el mensaje: "Solicitando carga manual". En este punto, haga clic en "elegir archivo" y seleccione el archivo <strong>"Lead_Conversion_Dataset"</strong> desde su computadora. Luego continúe con la secuencia de ejecución del código.</li>
+                    <li>Una vez ejecutado todo el código (de las 12 secciones), responda las cinco preguntas de evaluación formuladas en párrafos anteriores, utilizando los resultados específicos obtenidos en la ejecución del código.</li>
+                    <li>Cada pregunta vale <strong>20%</strong>. Envíe sus respuestas en archivo PDF antes de la fecha: <strong>(NN/NN/NN)</strong>, al correo: <strong>smliberman@fen.uchile.cl</strong></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <h2>Archivos para Descargar</h2>
+            <p>Descargue los archivos necesarios para completar la tarea:</p>
+            
+            <div class="download-grid">
+                <div class="download-item">
+                    <div class="file-icon excel-icon">📊</div>
+                    <h3>Dataset de Leads</h3>
+                    <div class="file-info">
+                        Archivo Excel con los datos de 9,240 leads para entrenar y evaluar el modelo de Machine Learning.
+                        <br><strong>Formato:</strong> .CSV
+                        
+                    </div>
+                    <a href="Lead_Conversion_Dataset.csv" class="download-link" download>
+                        Descargar Lead_Conversion_Dataset.csv
+                    </a>
+                </div>
+                
+                <div class="download-item">
+                    <div class="file-icon python-icon">🐍</div>
+                    <h3>Notebook de Python</h3>
+                    <div class="file-info">
+                        Jupyter Notebook con el código para el análisis de conversión de leads usando Random Forest.
+                        <br><strong>Formato:</strong> .ipynb
+                        
+                    </div>
+                    <a href="Caso_Lead_Conversion.ipynb" class="download-link" download>
+                        Descargar Caso_Lead_Conversion.ipynb
+                    </a>
+                </div>
+            </div>
+            
+            <div class="highlight">
+                <strong>Importante:</strong> Asegúrese de descargar ambos archivos antes de comenzar. El archivo Excel contiene los datos necesarios para el análisis, y el notebook de Python contiene todo el código estructurado en 12 secciones para completar el ejercicio.
+            </div>
+        </div>
+
+        <div class="footer">
+            
+            <p>Data Science para Empresas</p>
+        </div>
+    </div>
+</body>
+</html>
